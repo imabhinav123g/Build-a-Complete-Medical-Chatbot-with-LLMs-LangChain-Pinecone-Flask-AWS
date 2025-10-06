@@ -1,4 +1,4 @@
-name: Deploy Application Docker Image to EC2 instance
+name: Deploy Medical Chatbot Docker Image to EC2
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
       - name: Build, tag, and push Docker image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.ECR_REPO }}
+          ECR_REPOSITORY: medicalbot
           IMAGE_TAG: latest
         run: |
           echo "Building Docker image..."
@@ -46,7 +46,7 @@ jobs:
 
   Continuous-Deployment:
     needs: Continuous-Integration
-    runs-on: self-hosted
+    runs-on: self-hosted  # Make sure your EC2 instance is registered as self-hosted runner
 
     steps:
       - name: Checkout repository
@@ -72,4 +72,4 @@ jobs:
             -e PINECONE_API_KEY="${{ secrets.PINECONE_API_KEY }}" \
             -e GEMINI_API_KEY="${{ secrets.GEMINI_API_KEY }}" \
             -p 8080:8080 \
-            ${{ steps.login-ecr.outputs.registry }}/"${{ secrets.ECR_REPO }}":latest
+            ${{ steps.login-ecr.outputs.registry }}/medicalbot:latest
